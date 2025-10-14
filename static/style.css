@@ -1,0 +1,1040 @@
+/* --- RESET Y BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+  }
+  
+  /* --- EFECTO DE FONDO DINÁMICO --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.12), transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.08), transparent 50%);
+    animation: floating 18s ease-in-out infinite alternate;
+    z-index: -1;
+  }
+  
+  @keyframes floating {
+    0% { transform: scale(1) translate(0, 0); }
+    50% { transform: scale(1.05) translate(-1%, 1%); }
+    100% { transform: scale(1) translate(0, 0); }
+  }
+  
+  /* --- CONTENEDOR PRINCIPAL --- */
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 22px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    width: 95%;
+    max-width: 1200px;
+    padding: 45px 40px;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  /* --- CONTENEDOR PARA FORMULARIO DE REGISTRO --- */
+  .container.registro-container {
+    max-width: 500px;
+    padding: 40px 35px;
+  }
+
+  /* --- CONTENEDOR PARA PÁGINA DE RESERVA --- */
+  .container.reserva-container {
+    max-width: 1000px;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* --- ENCABEZADOS --- */
+  h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #ffd700, #ffcc70);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+  }
+  
+  h3 {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 35px;
+    letter-spacing: 0.5px;
+  }
+  
+  /* --- CAMPOS DEL FORMULARIO --- */
+  .form-group {
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  
+  label {
+    display: block;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+  }
+  
+  .input-container {
+    position: relative;
+  }
+  
+  input {
+    width: 100%;
+    padding: 14px 18px;
+    padding-right: 45px;
+    border-radius: 12px;
+    border: 1.8px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  input:focus {
+    border-color: #ffd700;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  }
+  
+  input.valid {
+    border-color: #4cd964;
+    background: rgba(76, 217, 100, 0.1);
+  }
+  
+  input.invalid {
+    border-color: #ff3b30;
+    background: rgba(255, 59, 48, 0.1);
+  }
+  
+  input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  /* --- ICONOS DE VALIDACIÓN --- */
+  .input-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
+  .input-icon.show {
+    opacity: 1;
+  }
+  
+  .valid-icon {
+    color: #4cd964;
+  }
+  
+  .invalid-icon {
+    color: #ff3b30;
+  }
+  
+  /* --- MENSAJES DE VALIDACIÓN --- */
+  .validation-message {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
+  
+  .validation-message.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .validation-message.success {
+    color: #4cd964;
+  }
+  
+  .validation-message.error {
+    color: #ff3b30;
+  }
+  
+  /* --- BARRA DE FORTALEZA DE CONTRASEÑA --- */
+  .password-strength {
+    margin-top: 12px;
+  }
+  
+  .strength-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  
+  .strength-fill {
+    height: 100%;
+    transition: width 0.4s ease;
+  }
+  
+  .strength-weak { width: 25%; background: linear-gradient(90deg, #ff3b30, #ff6b60); }
+  .strength-medium { width: 50%; background: linear-gradient(90deg, #ff9500, #ffb340); }
+  .strength-good { width: 75%; background: linear-gradient(90deg, #ffd633, #ffea70); }
+  .strength-strong { width: 100%; background: linear-gradient(90deg, #4cd964, #7ef28b); }
+  
+  .strength-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  
+  .strength-weak-text { color: #ff3b30; }
+  .strength-medium-text { color: #ff9500; }
+  .strength-good-text { color: #ffd633; }
+  .strength-strong-text { color: #4cd964; }
+  
+  /* --- BOTÓN --- */
+  button {
+    width: 100%;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #ffd700, #ffcc70);
+    color: #2c2c2c;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 14px;
+    margin-top: 25px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.45);
+  }
+  
+  button:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.25);
+  }
+  
+  button:disabled {
+    background: linear-gradient(135deg, #a5a5a5, #d3d3d3);
+    color: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  /* --- PANTALLA DE INICIO --- */
+  .home-container {
+    max-width: 600px;
+  }
+  
+  .welcome-content {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .welcome-content h2 {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 15px;
+    font-weight: 400;
+  }
+  
+  .welcome-content p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+  }
+  
+  .options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .option-card {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .option-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  .card-icon {
+    font-size: 2.5rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  
+  .option-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #fff;
+  }
+  
+  .option-card p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+  
+  .card-arrow {
+    margin-left: auto;
+    font-size: 1.5rem;
+    color: rgba(255, 215, 0, 0.8);
+    transition: transform 0.3s ease;
+  }
+  
+  .option-card:hover .card-arrow {
+    transform: translateX(5px);
+  }
+  
+  .hotel-info {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .info-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+  
+  /* --- NAVEGACIÓN --- */
+  .header-nav {
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  
+  /* --- SECCIONES DEL FORMULARIO --- */
+  .form-section {
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 25px;
+  }
+
+  /* Layout de una columna para formulario de reserva */
+  .reserva-form-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+
+  .form-section.horizontal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+  
+  .form-section h4 {
+    font-size: 1.1rem;
+    color: rgba(255, 215, 0, 0.9);
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .form-group.half {
+    flex: 1;
+  }
+  
+  /* --- SELECT --- */
+  select {
+    width: 100%;
+    padding: 14px 18px;
+    padding-right: 45px;
+    border-radius: 12px;
+    border: 1.8px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    outline: none;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+  }
+  
+  select:focus {
+    border-color: #ffd700;
+    background-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  }
+  
+  select option {
+    background: #2c5364;
+    color: #fff;
+  }
+  
+  /* --- GRID DE HABITACIONES --- */
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    justify-items: center;
+    justify-content: center;
+  }
+
+  /* --- SECCIÓN DE HABITACIONES CENTRADA --- */
+  .form-section.rooms-section {
+    text-align: center;
+  }
+
+  .form-section.rooms-section h4 {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .room-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .room-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  .room-card.selected {
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  
+  .room-image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+  }
+  
+  .room-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .room-card:hover .room-image img {
+    transform: scale(1.05);
+  }
+  
+  .room-info {
+    padding: 20px;
+  }
+  
+  .room-info h5 {
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  
+  .room-description {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  
+  .room-price {
+    font-size: 1.2rem;
+    color: #ffd700;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  
+  .select-room-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #ffd700, #ffcc70);
+    color: #2c2c2c;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .select-room-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+  }
+  
+  .room-card.selected .select-room-btn {
+    background: linear-gradient(135deg, #4cd964, #7ef28b);
+    color: #fff;
+  }
+
+  /* --- REFERENCIA DE HABITACIONES --- */
+  .rooms-reference {
+    margin-top: 20px;
+  }
+
+  .rooms-reference h5 {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+
+  .room-id {
+    font-size: 0.85rem;
+    color: #ffd700;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* --- SECCIÓN CENTRADA DE ENTRADA --- */
+  .centered-input-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .centered-input-section h4 {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .centered-input {
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  /* --- RESPONSIVE --- */
+  @media (max-width: 768px) {
+    .container {
+      width: 95%;
+      max-width: 600px;
+      padding: 35px 25px;
+    }
+
+    .reserva-form-layout {
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+
+    .form-section.horizontal {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 35px 25px;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 25px;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 13px 18px;
+    }
+    
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .rooms-grid {
+      grid-template-columns: 1fr;
+      max-width: 400px;
+    }
+    
+    .option-card {
+      flex-direction: column;
+      text-align: center;
+      gap: 15px;
+    }
+    
+    .card-icon {
+      margin-right: 0;
+      font-size: 2rem;
+    }
+    
+    .card-arrow {
+      margin-left: 0;
+    }
+
+    .rooms-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Centra horizontalmente el contenido */
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+    }
+    
+    .rooms-grid {
+      .rooms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        justify-content: center; /* centra las columnas dentro del grid */
+        gap: 20px;
+        margin: 0 auto;
+        max-width: 900px;
+      }
+    }
+  }
+
+/* --- PÁGINA DE CONFIRMACIÓN DE REGISTRO --- */
+.confirmacion-container {
+  position: relative;
+  max-width: 600px;
+  padding: 60px 40px;
+  overflow: hidden;
+}
+
+.confirmacion-card {
+  position: relative;
+  z-index: 2;
+}
+
+.success-icon {
+  margin-bottom: 30px;
+  animation: bounceIn 0.8s ease-out;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.confirmacion-mensaje {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.confirmacion-details {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.detail-value {
+  font-weight: 600;
+  color: #FFD700;
+}
+
+.confirmacion-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 14px 28px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  min-width: 140px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1a1a1a;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.confirmacion-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.confirmacion-footer p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.confirmacion-footer a {
+  color: #FFD700;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.confirmacion-footer a:hover {
+  text-decoration: underline;
+}
+
+.countdown-timer {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.countdown-timer p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  margin: 0;
+}
+
+#countdown-number {
+  color: #FFD700;
+  font-weight: 600;
+}
+
+.background-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.05));
+  animation: float 6s ease-in-out infinite;
+}
+
+.circle-1 {
+  width: 120px;
+  height: 120px;
+  top: 10%;
+  right: 10%;
+  animation-delay: 0s;
+}
+
+.circle-2 {
+  width: 80px;
+  height: 80px;
+  bottom: 20%;
+  left: 15%;
+  animation-delay: 2s;
+}
+
+.circle-3 {
+  width: 60px;
+  height: 60px;
+  top: 60%;
+  right: 20%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+/* --- MEDIA QUERIES PARA CONFIRMACIÓN --- */
+@media (max-width: 768px) {
+  .confirmacion-container {
+    padding: 40px 20px;
+  }
+  
+  .confirmacion-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .confirmacion-container {
+    padding: 30px 15px;
+  }
+  
+  .confirmacion-details {
+    padding: 20px 15px;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .success-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* --- ESTILOS ESPECÍFICOS PARA CONFIRMACIÓN DE RESERVA --- */
+.reserva-confirmacion-card {
+  max-width: 700px;
+}
+
+.reserva-details {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+}
+
+.reserva-details h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #FFD700;
+  text-align: center;
+}
+
+.detail-section {
+  margin-bottom: 25px;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-section h4 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.reserva-habitacion {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.reserva-notas {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.nota-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px 0;
+}
+
+.nota-item:last-child {
+  margin-bottom: 0;
+}
+
+.nota-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.nota-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* --- RESPONSIVE PARA CONFIRMACIÓN DE RESERVA --- */
+@media (max-width: 768px) {
+  .reserva-confirmacion-card {
+    padding: 40px 20px;
+  }
+  
+  .reserva-details {
+    padding: 20px 15px;
+  }
+  
+  .reserva-details h3 {
+    font-size: 1.2rem;
+  }
+  
+  .detail-section h4 {
+    font-size: 1rem;
+  }
+  
+  .reserva-notas {
+    padding: 15px;
+  }
+  
+  .nota-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .reserva-details {
+    padding: 15px 10px;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .reserva-habitacion {
+    display: inline-block;
+    margin-top: 5px;
+  }
+}

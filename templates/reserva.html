@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel SmartCheck - Realizar Reserva</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container reserva-container">
+    <div class="header-nav">
+      <a href="/" class="back-button">← Volver al inicio</a>
+    </div>
+    
+    <h1>Hotel SmartCheck</h1>
+    <h3>Realizar Reserva</h3>
+
+    <form id="reserva-form">
+      <div class="reserva-form-layout">
+        <!-- Columna izquierda: Información del huésped y habitación -->
+        <div>
+          <!-- Información del huésped -->
+          <div class="form-section">
+            <h4>Información del Huésped</h4>
+            
+            <div class="form-group">
+              <label for="nombre">Nombre completo</label>
+              <div class="input-container">
+                <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre completo" required>
+                <span class="input-icon valid-icon">✓</span>
+                <span class="input-icon invalid-icon">✗</span>
+              </div>
+              <div class="validation-message" id="nombre-message"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Correo electrónico</label>
+              <div class="input-container">
+                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+                <span class="input-icon valid-icon">✓</span>
+                <span class="input-icon invalid-icon">✗</span>
+              </div>
+              <div class="validation-message" id="email-message"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="telefono">Teléfono</label>
+              <div class="input-container">
+                <input type="tel" id="telefono" name="telefono" placeholder="1234567890" maxlength="10" required>
+                <span class="input-icon valid-icon">✓</span>
+                <span class="input-icon invalid-icon">✗</span>
+              </div>
+              <div class="validation-message" id="telefono-message"></div>
+            </div>
+          </div>
+
+          <!-- Habitaciones disponibles -->
+          <div class="form-section rooms-section">
+            <h4>Habitaciones Disponibles</h4>
+            <div class="rooms-grid">
+              {% for habitacion in habitaciones %}
+              <div class="room-card" data-room-id="{{ habitacion.id }}">
+                <div class="room-image">
+                  <img src="{{ url_for('static', filename='images/' + habitacion.imagen) }}" 
+                       alt="{{ habitacion.nombre }}" 
+                       onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkhhYml0YWNpw7NuPC90ZXh0Pgo8L3N2Zz4K'">
+                </div>
+                <div class="room-info">
+                  <h5>{{ habitacion.nombre }}</h5>
+                  <p class="room-id">ID: {{ habitacion.id }}</p>
+                  <p class="room-description">{{ habitacion.descripcion }}</p>
+                  <p class="room-price">${{ "{:,}".format(habitacion.precio) }} COP/noche</p>
+                  <button type="button" class="select-room-btn" data-room-id="{{ habitacion.id }}">Usar este ID</button>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Selección de habitación -->
+          <div class="form-section centered-input-section">
+            <h4>Ingrese el Nombre de su Habitación</h4>
+            
+            <div class="form-group centered-input">
+              <label for="habitacion">Nombre de la Habitación</label>
+              <div class="input-container">
+                <input type="text" id="habitacion" name="habitacion" placeholder="Ej: HAB_DOBLE_1, HAB_SUITE_2" required>
+                <span class="input-icon valid-icon">✓</span>
+                <span class="input-icon invalid-icon">✗</span>
+              </div>
+              <div class="validation-message" id="habitacion-message"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: Detalles de la reserva y habitaciones disponibles -->
+        <div>
+          <!-- Fechas y huéspedes -->
+          <div class="form-section">
+            <h4>Detalles de la Reserva</h4>
+            
+            <div class="form-row">
+              <div class="form-group half">
+                <label for="fecha_entrada">Fecha de Entrada</label>
+                <div class="input-container">
+                  <input type="date" id="fecha_entrada" name="fecha_entrada" required>
+                  <span class="input-icon valid-icon">✓</span>
+                  <span class="input-icon invalid-icon">✗</span>
+                </div>
+                <div class="validation-message" id="fecha_entrada-message"></div>
+              </div>
+
+              <div class="form-group half">
+                <label for="fecha_salida">Fecha de Salida</label>
+                <div class="input-container">
+                  <input type="date" id="fecha_salida" name="fecha_salida" required>
+                  <span class="input-icon valid-icon">✓</span>
+                  <span class="input-icon invalid-icon">✗</span>
+                </div>
+                <div class="validation-message" id="fecha_salida-message"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="numero_huespedes">Número de Huéspedes</label>
+              <div class="input-container">
+                <input type="number" id="numero_huespedes" name="numero_huespedes" placeholder="1-6" min="1" max="6" required>
+                <span class="input-icon valid-icon">✓</span>
+                <span class="input-icon invalid-icon">✗</span>
+              </div>
+              <div class="validation-message" id="numero_huespedes-message"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" id="submit-btn" disabled>Realizar Reserva</button>
+    </form>
+  </div>
+
+  <script>
+    // Expresiones regulares
+    const regexPatterns = {
+      nombre: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,60}$/,
+      email: /^[\w\.-]+@[\w\.-]+\.\w{2,4}$/,
+      telefono: /^\d{10}$/,
+      habitacion: /^HAB[A-Za-z0-9_]{1,20}$/,
+      numero_huespedes: /^[1-6]$/
+    };
+
+    // Mensajes de validación
+    const validationMessages = {
+      nombre: {
+        valid: "Nombre válido",
+        invalid: "Solo letras y espacios (3-60 caracteres)"
+      },
+      email: {
+        valid: "Correo válido",
+        invalid: "Formato de correo no válido"
+      },
+      telefono: {
+        valid: "Teléfono válido",
+        invalid: "Debe tener exactamente 10 dígitos"
+      },
+      habitacion: {
+        valid: "Nombre de habitación válido",
+        invalid: "Debe empezar con 'HAB' seguido de letras, números o guiones bajos (máximo 20 caracteres)"
+      },
+      numero_huespedes: {
+        valid: "Número de huéspedes válido",
+        invalid: "Solo se admiten de 1 a 6 huéspedes"
+      }
+    };
+
+    let selectedRoom = null;
+    const roomCards = document.querySelectorAll('.room-card');
+    const selectButtons = document.querySelectorAll('.select-room-btn');
+    
+    // Obtener lista de IDs de habitaciones disponibles
+    const availableRoomIds = Array.from(roomCards).map(card => card.getAttribute('data-room-id'));
+
+    // Función para limpiar mensajes de validación de un campo
+    function clearFieldValidation(fieldName) {
+      const input = document.getElementById(fieldName);
+      const message = document.getElementById(fieldName + '-message');
+      const validIcon = input.parentNode.querySelector('.valid-icon');
+      const invalidIcon = input.parentNode.querySelector('.invalid-icon');
+      
+      if (input && message && validIcon && invalidIcon) {
+        input.classList.remove('valid', 'invalid');
+        validIcon.classList.remove('show');
+        invalidIcon.classList.remove('show');
+        message.classList.remove('show', 'success', 'error');
+      }
+    }
+
+    // Función para validar un campo
+    function validateField(fieldName, value) {
+      const pattern = regexPatterns[fieldName];
+      if (!pattern) return true;
+      
+      const isValid = pattern.test(value);
+      
+      const input = document.getElementById(fieldName);
+      const message = document.getElementById(fieldName + '-message');
+      const validIcon = input.parentNode.querySelector('.valid-icon');
+      const invalidIcon = input.parentNode.querySelector('.invalid-icon');
+
+      if (value.length === 0) {
+        // Campo vacío
+        input.classList.remove('valid', 'invalid');
+        validIcon.classList.remove('show');
+        invalidIcon.classList.remove('show');
+        message.classList.remove('show', 'success', 'error');
+        return false;
+      } else if (isValid) {
+        // Campo válido
+        input.classList.remove('invalid');
+        input.classList.add('valid');
+        validIcon.classList.add('show');
+        invalidIcon.classList.remove('show');
+        message.textContent = validationMessages[fieldName].valid;
+        message.classList.remove('error');
+        message.classList.add('success', 'show');
+      } else {
+        // Campo inválido
+        input.classList.remove('valid');
+        input.classList.add('invalid');
+        validIcon.classList.remove('show');
+        invalidIcon.classList.add('show');
+        message.textContent = validationMessages[fieldName].invalid;
+        message.classList.remove('success');
+        message.classList.add('error', 'show');
+      }
+
+      return isValid;
+    }
+
+    // Función para validar fechas
+    function validateDates() {
+      const fechaEntrada = document.getElementById('fecha_entrada').value;
+      const fechaSalida = document.getElementById('fecha_salida').value;
+      const message = document.getElementById('fecha_salida-message');
+      
+      if (fechaEntrada && fechaSalida) {
+        const entrada = new Date(fechaEntrada);
+        const salida = new Date(fechaSalida);
+        
+        if (salida <= entrada) {
+          message.textContent = "La fecha de salida debe ser posterior a la de entrada";
+          message.classList.add('error', 'show');
+          message.classList.remove('success');
+          return false;
+        } else {
+          message.textContent = "Fechas válidas";
+          message.classList.add('success', 'show');
+          message.classList.remove('error');
+          return true;
+        }
+      }
+      return true;
+    }
+
+    // Función para validar habitación
+    function validateRoomInput() {
+      const habitacionInput = document.getElementById('habitacion');
+      const message = document.getElementById('habitacion-message');
+      const value = habitacionInput.value;
+      
+      // Primero validar formato
+      const formatValid = validateField('habitacion', value);
+      
+      if (!formatValid || value.length === 0) {
+        return formatValid;
+      }
+      
+      // Luego validar si la habitación existe
+      if (!availableRoomIds.includes(value)) {
+        // Formato correcto pero habitación no existe
+        habitacionInput.classList.remove('valid');
+        habitacionInput.classList.add('invalid');
+        habitacionInput.parentNode.querySelector('.valid-icon').classList.remove('show');
+        habitacionInput.parentNode.querySelector('.invalid-icon').classList.add('show');
+        message.textContent = "Esta habitación no está disponible. Selecciona una de las habitaciones mostradas arriba.";
+        message.classList.remove('success');
+        message.classList.add('error', 'show');
+        return false;
+      }
+      
+      // Habitación válida y existe
+      habitacionInput.classList.remove('invalid');
+      habitacionInput.classList.add('valid');
+      habitacionInput.parentNode.querySelector('.valid-icon').classList.add('show');
+      habitacionInput.parentNode.querySelector('.invalid-icon').classList.remove('show');
+      message.textContent = "Habitación válida y disponible";
+      message.classList.remove('error');
+      message.classList.add('success', 'show');
+      return true;
+    }
+
+    // Función para verificar si todos los campos son válidos
+    function checkFormValidity() {
+      const submitBtn = document.getElementById('submit-btn');
+      const requiredFields = ['nombre', 'email', 'telefono', 'habitacion', 'fecha_entrada', 'fecha_salida', 'numero_huespedes'];
+      
+      const fieldsValid = requiredFields.every(field => {
+        const value = document.getElementById(field).value;
+        return value.length > 0 && (regexPatterns[field] ? validateField(field, value) : true);
+      });
+      
+      const datesValid = validateDates();
+      const roomValid = validateRoomInput();
+      
+      submitBtn.disabled = !(fieldsValid && datesValid && roomValid);
+    }
+
+    // Función para seleccionar habitación
+    function selectRoom(roomId) {
+      // Remover selección anterior
+      roomCards.forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // Agregar selección nueva
+      const selectedCard = document.querySelector(`[data-room-id="${roomId}"]`);
+      selectedCard.classList.add('selected');
+      
+      // Llenar el campo de texto con el ID de la habitación
+      const habitacionInput = document.getElementById('habitacion');
+      habitacionInput.value = roomId;
+      
+      // Validar el campo
+      validateField('habitacion', roomId);
+      checkFormValidity();
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Configurar fecha mínima (hoy)
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha_entrada').min = today;
+      document.getElementById('fecha_salida').min = today;
+
+      // Event listeners para campos de formulario
+      const fields = ['nombre', 'email', 'telefono', 'habitacion', 'fecha_entrada', 'fecha_salida', 'numero_huespedes'];
+      
+      fields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        
+        field.addEventListener('input', function() {
+          if (regexPatterns[fieldName]) {
+            validateField(fieldName, this.value);
+          }
+          checkFormValidity();
+        });
+
+        field.addEventListener('change', function() {
+          if (regexPatterns[fieldName]) {
+            validateField(fieldName, this.value);
+          }
+          checkFormValidity();
+        });
+      });
+
+      // Event listeners para fechas
+      document.getElementById('fecha_entrada').addEventListener('change', function() {
+        const fechaSalida = document.getElementById('fecha_salida');
+        fechaSalida.min = this.value;
+        checkFormValidity();
+      });
+
+      document.getElementById('fecha_salida').addEventListener('change', checkFormValidity);
+
+      // Event listeners para botones de selección de habitación
+      selectButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const roomId = this.getAttribute('data-room-id');
+          selectRoom(roomId);
+        });
+      });
+
+      // Manejo del envío del formulario
+      document.getElementById('reserva-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submit-btn');
+        const originalText = submitBtn.textContent;
+        
+        // Mostrar estado de carga
+        submitBtn.textContent = 'Procesando Reserva...';
+        submitBtn.disabled = true;
+
+        const datos = {
+          nombre: document.getElementById("nombre").value,
+          email: document.getElementById("email").value,
+          telefono: document.getElementById("telefono").value,
+          habitacion: document.getElementById("habitacion").value,
+          fecha_entrada: document.getElementById("fecha_entrada").value,
+          fecha_salida: document.getElementById("fecha_salida").value,
+          numero_huespedes: document.getElementById("numero_huespedes").value
+        };
+
+        try {
+          const respuesta = await fetch("/validar_reserva", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(datos)
+          });
+          
+          const resultado = await respuesta.json();
+
+          if (resultado.valido) {
+            // Éxito - redirigir a confirmación
+            if (resultado.redirect) {
+              window.location.href = resultado.redirect;
+            } else {
+              alert("✅ " + resultado.mensaje);
+              document.getElementById("reserva-form").reset();
+              
+              // Limpiar selección de habitación
+              roomCards.forEach(card => {
+                card.classList.remove('selected');
+              });
+              
+              // Limpiar estados de validación
+              fields.forEach(fieldName => {
+                clearFieldValidation(fieldName);
+              });
+              
+              clearFieldValidation('habitacion');
+              checkFormValidity();
+            }
+          } else {
+            // Mostrar errores del servidor
+            for (const [campo, mensaje] of Object.entries(resultado.errores)) {
+              const message = document.getElementById(campo + '-message');
+              if (message) {
+                message.textContent = "❌ " + mensaje;
+                message.classList.add('error', 'show');
+                message.classList.remove('success');
+              }
+            }
+          }
+        } catch (error) {
+          alert("❌ Error al procesar la solicitud. Inténtalo de nuevo.");
+        } finally {
+          // Restaurar botón
+          submitBtn.textContent = originalText;
+          checkFormValidity();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

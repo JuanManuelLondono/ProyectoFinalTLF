@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel SmartCheck - Inicio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container home-container">
+    <div class="welcome-content">
+      <h1>Hotel SmartCheck</h1>
+      <h2>Bienvenido a su experiencia de hospedaje perfecta</h2>
+      <p>Elija una opción para continuar:</p>
+    </div>
+
+    <div class="options-container">
+      <a href="/registro" class="option-card registro-card">
+        <div class="card-icon">👤</div>
+        <h3>Registro de Huésped</h3>
+        <p>Registre sus datos personales para acceder a nuestros servicios</p>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a href="/reserva" class="option-card reserva-card">
+        <div class="card-icon">🏨</div>
+        <h3>Realizar Reserva</h3>
+        <p>Seleccione una habitación y realice su reserva de forma rápida y segura</p>
+        <div class="card-arrow">→</div>
+      </a>
+    </div>
+
+    <div class="hotel-info">
+      <p class="info-text">✨ Disfrute de una experiencia única en Hotel SmartCheck ✨</p>
+    </div>
+  </div>
+</body>
+</html>

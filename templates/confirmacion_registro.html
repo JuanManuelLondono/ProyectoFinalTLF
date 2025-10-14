@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel SmartCheck - Registro Exitoso</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container confirmacion-container">
+    <div class="confirmacion-card">
+      <div class="success-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="12" fill="#10B981"/>
+          <path d="M8 12L11 15L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      
+      <h1>¡Registro Exitoso!</h1>
+      <p class="confirmacion-mensaje">
+        Bienvenido a Hotel SmartCheck, <strong>{{ nombre }}</strong>.
+        <br>Tu cuenta ha sido creada correctamente.
+      </p>
+      
+      <div class="confirmacion-details">
+        <div class="detail-item">
+          <span class="detail-label">Correo electrónico:</span>
+          <span class="detail-value">{{ email }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Fecha de registro:</span>
+          <span class="detail-value">{{ fecha_registro }}</span>
+        </div>
+      </div>
+      
+      <div class="confirmacion-actions">
+        <a href="/" class="btn-primary">Ir al Inicio</a>
+        <a href="/reserva" class="btn-secondary">Hacer una Reserva</a>
+      </div>
+      
+      <div class="confirmacion-footer">
+        <p>¿Necesitas ayuda? <a href="mailto:support@hotelsmartcheck.com">Contáctanos</a></p>
+      </div>
+    </div>
+    
+    <div class="background-decoration">
+      <div class="decoration-circle circle-1"></div>
+      <div class="decoration-circle circle-2"></div>
+      <div class="decoration-circle circle-3"></div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-redirección después de 10 segundos
+    let countdown = 10;
+    const countdownElement = document.createElement('div');
+    countdownElement.className = 'countdown-timer';
+    countdownElement.innerHTML = `
+      <p>Serás redirigido automáticamente al inicio en <span id="countdown-number">${countdown}</span> segundos...</p>
+    `;
+    
+    document.querySelector('.confirmacion-card').appendChild(countdownElement);
+    
+    const countdownInterval = setInterval(() => {
+      countdown--;
+      document.getElementById('countdown-number').textContent = countdown;
+      
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        window.location.href = '/';
+      }
+    }, 1000);
+    
+    // Cancelar auto-redirección si el usuario interactúa
+    document.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        clearInterval(countdownInterval);
+      });
+    });
+  </script>
+</body>
+</html>

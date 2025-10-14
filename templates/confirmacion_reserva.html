@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel SmartCheck - Reserva Confirmada</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container confirmacion-container">
+    <div class="confirmacion-card reserva-confirmacion-card">
+      <div class="success-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="12" fill="#10B981"/>
+          <path d="M8 12L11 15L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      
+      <h1>¡Reserva Confirmada!</h1>
+      <p class="confirmacion-mensaje">
+        Gracias <strong>{{ nombre }}</strong>, tu reserva ha sido procesada exitosamente.
+        <br>Te esperamos en Hotel SmartCheck.
+      </p>
+      
+      <div class="reserva-details">
+        <h3>Detalles de tu Reserva</h3>
+        
+        <div class="detail-section">
+          <h4>Información Personal</h4>
+          <div class="detail-item">
+            <span class="detail-label">Nombre:</span>
+            <span class="detail-value">{{ nombre }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Correo electrónico:</span>
+            <span class="detail-value">{{ email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Teléfono:</span>
+            <span class="detail-value">{{ telefono }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>Detalles de la Reserva</h4>
+          <div class="detail-item">
+            <span class="detail-label">Habitación:</span>
+            <span class="detail-value reserva-habitacion">{{ habitacion }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Fecha de entrada:</span>
+            <span class="detail-value">{{ fecha_entrada }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Fecha de salida:</span>
+            <span class="detail-value">{{ fecha_salida }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Número de huéspedes:</span>
+            <span class="detail-value">{{ numero_huespedes }} {% if numero_huespedes == '1' %}huésped{% else %}huéspedes{% endif %}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Fecha de reserva:</span>
+            <span class="detail-value">{{ fecha_reserva }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="reserva-notas">
+        <div class="nota-item">
+          <span class="nota-icon">📧</span>
+          <span class="nota-text">Te hemos enviado un correo de confirmación a {{ email }}</span>
+        </div>
+        <div class="nota-item">
+          <span class="nota-icon">📱</span>
+          <span class="nota-text">Guarda este número de referencia: <strong>{{ habitacion }}-{{ fecha_entrada.replace('-', '') }}</strong></span>
+        </div>
+        <div class="nota-item">
+          <span class="nota-icon">⏰</span>
+          <span class="nota-text">Check-in: 15:00 | Check-out: 12:00</span>
+        </div>
+      </div>
+      
+      <div class="confirmacion-actions">
+        <a href="/" class="btn-primary">Ir al Inicio</a>
+        <a href="/reserva" class="btn-secondary">Nueva Reserva</a>
+      </div>
+      
+      <div class="confirmacion-footer">
+        <p>¿Necesitas ayuda? <a href="mailto:support@hotelsmartcheck.com">Contáctanos</a></p>
+      </div>
+    </div>
+    
+    <div class="background-decoration">
+      <div class="decoration-circle circle-1"></div>
+      <div class="decoration-circle circle-2"></div>
+      <div class="decoration-circle circle-3"></div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-redirección después de 30 segundos
+    let countdown = 30;
+    const countdownElement = document.createElement('div');
+    countdownElement.className = 'countdown-timer';
+    countdownElement.innerHTML = `
+      <p>Serás redirigido automáticamente al inicio en <span id="countdown-number">${countdown}</span> segundos...</p>
+    `;
+    
+    document.querySelector('.confirmacion-card').appendChild(countdownElement);
+    
+    const countdownInterval = setInterval(() => {
+      countdown--;
+      document.getElementById('countdown-number').textContent = countdown;
+      
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        window.location.href = '/';
+      }
+    }, 1000);
+    
+    // Cancelar auto-redirección si el usuario interactúa
+    document.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        clearInterval(countdownInterval);
+      });
+    });
+  </script>
+</body>
+</html>

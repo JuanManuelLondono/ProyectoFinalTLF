@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel SmartCheck - Registro de Huésped</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container registro-container">
+    <div class="header-nav">
+      <a href="/" class="back-button">← Volver al inicio</a>
+    </div>
+    
+    <h1>Hotel SmartCheck</h1>
+    <h3>Formulario de Registro de Huésped</h3>
+
+    <form id="registro-form">
+      <div class="form-group">
+        <label for="nombre">Nombre completo</label>
+        <div class="input-container">
+          <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre completo" required>
+          <span class="input-icon valid-icon">✓</span>
+          <span class="input-icon invalid-icon">✗</span>
+        </div>
+        <div class="validation-message" id="nombre-message"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <div class="input-container">
+          <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+          <span class="input-icon valid-icon">✓</span>
+          <span class="input-icon invalid-icon">✗</span>
+        </div>
+        <div class="validation-message" id="email-message"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <div class="input-container">
+          <input type="tel" id="telefono" name="telefono" placeholder="1234567890" maxlength="10" required>
+          <span class="input-icon valid-icon">✓</span>
+          <span class="input-icon invalid-icon">✗</span>
+        </div>
+        <div class="validation-message" id="telefono-message"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="cedula">Cédula o Pasaporte</label>
+        <div class="input-container">
+          <input type="text" id="cedula" name="cedula" placeholder="ABC123456" required>
+          <span class="input-icon valid-icon">✓</span>
+          <span class="input-icon invalid-icon">✗</span>
+        </div>
+        <div class="validation-message" id="cedula-message"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="contrasena">Contraseña</label>
+        <div class="input-container">
+          <input type="password" id="contrasena" name="contrasena" placeholder="Mín. 8 caracteres" required>
+          <span class="input-icon valid-icon">✓</span>
+          <span class="input-icon invalid-icon">✗</span>
+        </div>
+        <div class="password-strength" id="password-strength" style="display: none;">
+          <div class="strength-bar">
+            <div class="strength-fill" id="strength-fill"></div>
+          </div>
+          <div class="strength-text" id="strength-text"></div>
+        </div>
+        <div class="validation-message" id="contrasena-message"></div>
+      </div>
+
+      <button type="submit" id="submit-btn" disabled>Registrar</button>
+    </form>
+  </div>
+
+  <script>
+    // Expresiones regulares
+    const regexPatterns = {
+      nombre: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,60}$/,
+      email: /^[\w\.-]+@[\w\.-]+\.\w{2,4}$/,
+      telefono: /^\d{10}$/,
+      cedula: /^[A-Za-z0-9]{6,12}$/,
+      contrasena: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/~`|\\]).{8,}$/
+    };
+
+    // Mensajes de validación
+    const validationMessages = {
+      nombre: {
+        valid: "Nombre válido",
+        invalid: "Solo letras y espacios (3-60 caracteres)"
+      },
+      email: {
+        valid: "Correo válido",
+        invalid: "Formato de correo no válido"
+      },
+      telefono: {
+        valid: "Teléfono válido",
+        invalid: "Debe tener exactamente 10 dígitos"
+      },
+      cedula: {
+        valid: "Documento válido",
+        invalid: "Entre 6 y 12 caracteres alfanuméricos"
+      },
+      contrasena: {
+        valid: "Contraseña segura",
+        invalid: "Mín. 8 caracteres, 1 mayúscula, 1 número y 1 carácter especial"
+      }
+    };
+
+    // Función para limpiar mensajes de validación de un campo
+    function clearFieldValidation(fieldName) {
+      const input = document.getElementById(fieldName);
+      const message = document.getElementById(fieldName + '-message');
+      const validIcon = input.parentNode.querySelector('.valid-icon');
+      const invalidIcon = input.parentNode.querySelector('.invalid-icon');
+      
+      input.classList.remove('valid', 'invalid');
+      validIcon.classList.remove('show');
+      invalidIcon.classList.remove('show');
+      message.classList.remove('show', 'success', 'error');
+    }
+
+    // Función para limpiar mensajes de todos los campos excepto el especificado
+    function clearOtherFieldsValidation(currentField) {
+      const allFields = ['nombre', 'email', 'telefono', 'cedula', 'contrasena'];
+      allFields.forEach(fieldName => {
+        if (fieldName !== currentField) {
+          clearFieldValidation(fieldName);
+        }
+      });
+    }
+
+    // Función para validar un campo
+    function validateField(fieldName, value) {
+      const pattern = regexPatterns[fieldName];
+      const isValid = pattern.test(value);
+      
+      const input = document.getElementById(fieldName);
+      const message = document.getElementById(fieldName + '-message');
+      const validIcon = input.parentNode.querySelector('.valid-icon');
+      const invalidIcon = input.parentNode.querySelector('.invalid-icon');
+
+      if (value.length === 0) {
+        // Campo vacío
+        input.classList.remove('valid', 'invalid');
+        validIcon.classList.remove('show');
+        invalidIcon.classList.remove('show');
+        message.classList.remove('show', 'success', 'error');
+        return false;
+      } else if (isValid) {
+        // Campo válido
+        input.classList.remove('invalid');
+        input.classList.add('valid');
+        validIcon.classList.add('show');
+        invalidIcon.classList.remove('show');
+        message.textContent = validationMessages[fieldName].valid;
+        message.classList.remove('error');
+        message.classList.add('success', 'show');
+      } else {
+        // Campo inválido
+        input.classList.remove('valid');
+        input.classList.add('invalid');
+        validIcon.classList.remove('show');
+        invalidIcon.classList.add('show');
+        message.textContent = validationMessages[fieldName].invalid;
+        message.classList.remove('success');
+        message.classList.add('error', 'show');
+      }
+
+      return isValid;
+    }
+
+    // Función para evaluar fortaleza de contraseña
+    function evaluatePasswordStrength(password) {
+      let score = 0;
+      const checks = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        symbol: /[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/~`|\\]/.test(password)
+      };
+
+      Object.values(checks).forEach(check => {
+        if (check) score++;
+      });
+
+      return {
+        score: score,
+        checks: checks,
+        level: score <= 2 ? 'weak' : score <= 3 ? 'medium' : score <= 4 ? 'good' : 'strong'
+      };
+    }
+
+    // Función para actualizar barra de fortaleza
+    function updatePasswordStrength(password) {
+      const strengthContainer = document.getElementById('password-strength');
+      const strengthFill = document.getElementById('strength-fill');
+      const strengthText = document.getElementById('strength-text');
+
+      if (password.length === 0) {
+        strengthContainer.style.display = 'none';
+        return;
+      }
+
+      strengthContainer.style.display = 'block';
+      const strength = evaluatePasswordStrength(password);
+
+      // Remover clases anteriores
+      strengthFill.className = 'strength-fill';
+      strengthText.className = 'strength-text';
+
+      // Agregar clases según el nivel
+      strengthFill.classList.add(`strength-${strength.level}`);
+      strengthText.classList.add(`strength-${strength.level}-text`);
+
+      const levelTexts = {
+        weak: 'Débil',
+        medium: 'Media',
+        good: 'Buena',
+        strong: 'Fuerte'
+      };
+
+      strengthText.textContent = `Fortaleza: ${levelTexts[strength.level]}`;
+    }
+
+    // Función para verificar si todos los campos son válidos
+    function checkFormValidity() {
+      const submitBtn = document.getElementById('submit-btn');
+      const allFields = ['nombre', 'email', 'telefono', 'cedula', 'contrasena'];
+      const allValid = allFields.every(field => {
+        const value = document.getElementById(field).value;
+        return value.length > 0 && validateField(field, value);
+      });
+
+      submitBtn.disabled = !allValid;
+    }
+
+    // Agregar event listeners para validación en tiempo real
+    document.addEventListener('DOMContentLoaded', function() {
+      const fields = ['nombre', 'email', 'telefono', 'cedula', 'contrasena'];
+
+      fields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        
+        // Evento focus: limpiar mensajes de otros campos cuando se hace clic en este campo
+        field.addEventListener('focus', function() {
+          clearOtherFieldsValidation(fieldName);
+        });
+        
+        field.addEventListener('input', function() {
+          validateField(fieldName, this.value);
+          
+          if (fieldName === 'contrasena') {
+            updatePasswordStrength(this.value);
+          }
+          
+          checkFormValidity();
+        });
+
+        field.addEventListener('blur', function() {
+          validateField(fieldName, this.value);
+          checkFormValidity();
+        });
+      });
+
+      // Manejo del envío del formulario
+      document.getElementById('registro-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submit-btn');
+        const originalText = submitBtn.textContent;
+        
+        // Mostrar estado de carga
+        submitBtn.textContent = 'Registrando...';
+        submitBtn.disabled = true;
+
+        const datos = {
+          nombre: document.getElementById("nombre").value,
+          email: document.getElementById("email").value,
+          telefono: document.getElementById("telefono").value,
+          cedula: document.getElementById("cedula").value,
+          contrasena: document.getElementById("contrasena").value
+        };
+
+        try {
+          const respuesta = await fetch("/validar", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(datos)
+          });
+          
+          const resultado = await respuesta.json();
+
+          if (resultado.valido) {
+            // Éxito - redirigir a la página de confirmación
+            if (resultado.redirect) {
+              window.location.href = resultado.redirect;
+            } else {
+              // Fallback si no hay redirect
+              alert("✅ " + resultado.mensaje);
+              document.getElementById("registro-form").reset();
+              
+              // Limpiar estados de validación
+              fields.forEach(fieldName => {
+                const input = document.getElementById(fieldName);
+                const message = document.getElementById(fieldName + '-message');
+                const validIcon = input.parentNode.querySelector('.valid-icon');
+                const invalidIcon = input.parentNode.querySelector('.invalid-icon');
+                
+                input.classList.remove('valid', 'invalid');
+                validIcon.classList.remove('show');
+                invalidIcon.classList.remove('show');
+                message.classList.remove('show', 'success', 'error');
+              });
+              
+              document.getElementById('password-strength').style.display = 'none';
+              checkFormValidity();
+            }
+            
+          } else {
+            // Mostrar errores del servidor
+            for (const [campo, mensaje] of Object.entries(resultado.errores)) {
+              const input = document.getElementById(campo);
+              const message = document.getElementById(campo + '-message');
+              const invalidIcon = input.parentNode.querySelector('.invalid-icon');
+              
+              input.classList.add('invalid');
+              invalidIcon.classList.add('show');
+              message.textContent = "❌ " + mensaje;
+              message.classList.add('error', 'show');
+            }
+          }
+        } catch (error) {
+          alert("❌ Error al procesar la solicitud. Inténtalo de nuevo.");
+        } finally {
+          // Restaurar botón
+          submitBtn.textContent = originalText;
+          checkFormValidity();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
