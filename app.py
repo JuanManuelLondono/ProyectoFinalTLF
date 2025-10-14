@@ -1,9 +1,67 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import re
 from datetime import datetime
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = '4545' 
+
+# Configuración de SendGrid
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+
+def enviar_correo_registro(nombre, email):
+    try:
+        message = Mail(
+            from_email='juanp.velezl@uqvirtual.edu.co',
+            to_emails=email,
+            subject='Bienvenido a Hotel SmartCheck',
+            html_content=f"""
+            <h2>¡Bienvenido a Hotel SmartCheck, {nombre}!</h2>
+            <p>Tu registro ha sido completado exitosamente.</p>
+            <p>Ahora puedes realizar reservas en nuestro hotel.</p>
+            """
+        )
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        return True
+    except Exception as e:
+        print(f"Error al enviar correo de registro: {str(e)}")
+        print(f"Detalles - Nombre: {nombre}, Email: {email}")
+        return False
+
+def enviar_correo_reserva(nombre, email, habitacion, fecha_entrada, fecha_salida, numero_huespedes):
+    try:
+        message = Mail(
+            from_email='juanp.velezl@uqvirtual.edu.co',
+            to_emails=email,
+            subject='Confirmación de Reserva - Hotel SmartCheck',
+            html_content=f"""
+            <h2>Confirmación de Reserva - Hotel SmartCheck</h2>
+            <p>Estimado(a) {nombre},</p>
+            <p>Tu reserva ha sido confirmada con los siguientes detalles:</p>
+            <ul>
+                <li><strong>Habitación:</strong> {habitacion}</li>
+                <li><strong>Fecha de entrada:</strong> {fecha_entrada}</li>
+                <li><strong>Fecha de salida:</strong> {fecha_salida}</li>
+                <li><strong>Número de huéspedes:</strong> {numero_huespedes}</li>
+            </ul>
+            <p>¡Esperamos verte pronto!</p>
+            """
+        )
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        return True
+    except Exception as e:
+        print(f"Error al enviar correo de reserva: {str(e)}")
+        print(f"Detalles - Nombre: {nombre}, Email: {email}, Habitación: {habitacion}")
+        print(f"Fechas - Entrada: {fecha_entrada}, Salida: {fecha_salida}, Huéspedes: {numero_huespedes}")
+        return False
 
 # Expresiones regulares
 regex_nombre = r'^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,60}$'
@@ -120,6 +178,10 @@ def validar_form():
             'email': email,
             'fecha_registro': fecha_registro
         }
+        
+        # Enviar correo de bienvenida
+        enviar_correo_registro(nombre, email)
+        
         return jsonify({'valido': True, 'redirect': url_for('confirmacion_registro')})
 
 @app.route('/validar_reserva', methods=['POST'])
@@ -184,6 +246,10 @@ def validar_reserva():
             'numero_huespedes': numero_huespedes,
             'fecha_reserva': fecha_reserva
         }
+        
+        # Enviar correo de confirmación de reserva
+        enviar_correo_reserva(nombre, email, habitacion, fecha_entrada, fecha_salida, numero_huespedes)
+        
         return jsonify({'valido': True, 'redirect': url_for('confirmacion_reserva')})
 
 if __name__ == '__main__':
