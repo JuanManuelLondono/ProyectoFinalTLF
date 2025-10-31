@@ -49,7 +49,7 @@
             <div class="form-group">
               <label for="telefono">Teléfono</label>
               <div class="input-container">
-                <input type="tel" id="telefono" name="telefono" placeholder="1234567890" maxlength="10" required>
+                <input type="tel" id="telefono" name="telefono" placeholder="3123456789" maxlength="10" required>
                 <span class="input-icon valid-icon">✓</span>
                 <span class="input-icon invalid-icon">✗</span>
               </div>
@@ -146,7 +146,7 @@
     const regexPatterns = {
       nombre: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,60}$/,
       email: /^[\w\.-]+@[\w\.-]+\.\w{2,4}$/,
-      telefono: /^\d{10}$/,
+      telefono: /^3\d{9}$/,
       habitacion: /^HAB[A-Za-z0-9_]{1,20}$/,
       numero_huespedes: /^[1-6]$/
     };
@@ -163,7 +163,7 @@
       },
       telefono: {
         valid: "Teléfono válido",
-        invalid: "Debe tener exactamente 10 dígitos"
+        invalid: "Debe empezar con 3 y tener exactamente 10 dígitos"
       },
       habitacion: {
         valid: "Nombre de habitación válido",

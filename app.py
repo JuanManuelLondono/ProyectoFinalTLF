@@ -66,8 +66,9 @@ def enviar_correo_reserva(nombre, email, habitacion, fecha_entrada, fecha_salida
 # Expresiones regulares
 regex_nombre = r'^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,60}$'
 regex_email = r'^[\w\.-]+@[\w\.-]+\.\w{2,4}$'
-regex_telefono = r'^\d{10}$'
-regex_cedula = r'^[A-Za-z0-9]{6,12}$'
+regex_telefono = r'^3\d{9}$'
+regex_cedula = r'^\d{10}$'
+regex_pasaporte = r'^[A-Za-z0-9]{6,9}$'
 regex_contrasena = r'^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/~`|\\]).{8,}$'
 regex_habitacion = r'^HAB[A-Za-z0-9_]{1,20}$'
 
@@ -153,6 +154,7 @@ def validar_form():
     email = data.get('email', '')
     telefono = data.get('telefono', '')
     cedula = data.get('cedula', '')
+    tipo_identificacion = data.get('tipo_identificacion', 'cedula')
     contrasena = data.get('contrasena', '')
 
     errores = {}
@@ -162,9 +164,14 @@ def validar_form():
     if not validar(email, regex_email):
         errores['email'] = "Formato de correo no válido."
     if not validar(telefono, regex_telefono):
-        errores['telefono'] = "Debe tener exactamente 10 dígitos."
-    if not validar(cedula, regex_cedula):
-        errores['cedula'] = "Entre 6 y 12 caracteres alfanuméricos."
+        errores['telefono'] = "Debe empezar con 3 y tener exactamente 10 dígitos."
+    # Validar documento según el tipo seleccionado
+    if tipo_identificacion == 'pasaporte':
+        if not validar(cedula, regex_pasaporte):
+            errores['cedula'] = "Pasaporte: 6-9 caracteres alfanuméricos."
+    else:
+        if not validar(cedula, regex_cedula):
+            errores['cedula'] = "Cédula colombiana: exactamente 10 números."
     if not validar(contrasena, regex_contrasena):
         errores['contrasena'] = "Debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial."
 
@@ -207,7 +214,7 @@ def validar_reserva():
     if not validar(email, regex_email):
         errores['email'] = "Formato de correo no válido."
     if not validar(telefono, regex_telefono):
-        errores['telefono'] = "Debe tener exactamente 10 dígitos."
+        errores['telefono'] = "Debe empezar con 3 y tener exactamente 10 dígitos."
     if not habitacion:
         errores['habitacion'] = "Debe ingresar el nombre de una habitación."
     elif not validar(habitacion, regex_habitacion):

@@ -50,9 +50,19 @@
       </div>
 
       <div class="form-group">
-        <label for="cedula">Cédula o Pasaporte</label>
+        <label for="tipo_identificacion">Tipo de identificación</label>
         <div class="input-container">
-          <input type="text" id="cedula" name="cedula" placeholder="ABC123456" required>
+          <select id="tipo_identificacion" name="tipo_identificacion">
+            <option value="cedula">Cédula</option>
+            <option value="pasaporte">Pasaporte</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cedula">Número de identificación</label>
+        <div class="input-container">
+          <input type="text" id="cedula" name="cedula" placeholder="Ej: 1234567890" required maxlength="10" pattern="\d{10}">
           <span class="input-icon valid-icon">✓</span>
           <span class="input-icon invalid-icon">✗</span>
         </div>
@@ -84,9 +94,10 @@
     const regexPatterns = {
       nombre: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,60}$/,
       email: /^[\w\.-]+@[\w\.-]+\.\w{2,4}$/,
-      telefono: /^\d{10}$/,
-      cedula: /^[A-Za-z0-9]{6,12}$/,
-      contrasena: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/~`|\\]).{8,}$/
+      telefono: /^3\d{9}$/,
+  cedula: /^\d{10}$/,
+      pasaporte: /^[A-Za-z0-9]{6,9}$/,
+      contrasena: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};:'\",.<>?/~`|\\]).{8,}$/
     };
 
     // Mensajes de validación
@@ -101,11 +112,15 @@
       },
       telefono: {
         valid: "Teléfono válido",
-        invalid: "Debe tener exactamente 10 dígitos"
+        invalid: "Debe empezar con 3 y tener exactamente 10 dígitos"
       },
       cedula: {
+        valid: "Cédula válida",
+        invalid: "Cédula colombiana: exactamente 10 números"
+      },
+      pasaporte: {
         valid: "Documento válido",
-        invalid: "Entre 6 y 12 caracteres alfanuméricos"
+        invalid: "Pasaporte: 6 a 9 caracteres alfanuméricos"
       },
       contrasena: {
         valid: "Contraseña segura",
@@ -136,11 +151,20 @@
       });
     }
 
-    // Función para validar un campo
+    // Función para validar un campo (maneja cédula/pasaporte dinámicamente)
     function validateField(fieldName, value) {
-      const pattern = regexPatterns[fieldName];
+      // Para el campo 'cedula' usamos la regex según el tipo seleccionado
+      let pattern = regexPatterns[fieldName];
+      let messageKey = fieldName;
+
+      if (fieldName === 'cedula') {
+        const tipo = document.getElementById('tipo_identificacion')?.value || 'cedula';
+        pattern = tipo === 'pasaporte' ? regexPatterns.pasaporte : regexPatterns.cedula;
+        messageKey = tipo === 'pasaporte' ? 'pasaporte' : 'cedula';
+      }
+
       const isValid = pattern.test(value);
-      
+
       const input = document.getElementById(fieldName);
       const message = document.getElementById(fieldName + '-message');
       const validIcon = input.parentNode.querySelector('.valid-icon');
@@ -159,7 +183,7 @@
         input.classList.add('valid');
         validIcon.classList.add('show');
         invalidIcon.classList.remove('show');
-        message.textContent = validationMessages[fieldName].valid;
+        message.textContent = validationMessages[messageKey].valid;
         message.classList.remove('error');
         message.classList.add('success', 'show');
       } else {
@@ -168,7 +192,7 @@
         input.classList.add('invalid');
         validIcon.classList.remove('show');
         invalidIcon.classList.add('show');
-        message.textContent = validationMessages[fieldName].invalid;
+        message.textContent = validationMessages[messageKey].invalid;
         message.classList.remove('success');
         message.classList.add('error', 'show');
       }
@@ -270,6 +294,23 @@
         });
       });
 
+      // Cuando cambia el tipo de identificación, actualizar placeholder y revalidar el campo
+      const tipoSelect = document.getElementById('tipo_identificacion');
+      if (tipoSelect) {
+        tipoSelect.addEventListener('change', function() {
+          const tipo = this.value;
+          const cedulaInput = document.getElementById('cedula');
+          if (tipo === 'pasaporte') {
+            cedulaInput.placeholder = 'Ej: ABC123456';
+          } else {
+            cedulaInput.placeholder = 'Ej: 12345678';
+          }
+          // Revalidar
+          validateField('cedula', cedulaInput.value);
+          checkFormValidity();
+        });
+      }
+
       // Manejo del envío del formulario
       document.getElementById('registro-form').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -285,6 +326,7 @@
           nombre: document.getElementById("nombre").value,
           email: document.getElementById("email").value,
           telefono: document.getElementById("telefono").value,
+          tipo_identificacion: document.getElementById("tipo_identificacion").value,
           cedula: document.getElementById("cedula").value,
           contrasena: document.getElementById("contrasena").value
         };
