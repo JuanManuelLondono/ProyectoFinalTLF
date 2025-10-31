@@ -68,7 +68,7 @@ regex_nombre = r'^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,60}$'
 regex_email = r'^[\w\.-]+@[\w\.-]+\.\w{2,4}$'
 regex_telefono = r'^3\d{9}$'
 regex_cedula = r'^\d{10}$'
-regex_pasaporte = r'^[A-Za-z0-9]{6,9}$'
+regex_pasaporte = r'^[A-Z0-9]{6,9}$'
 regex_contrasena = r'^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/~`|\\]).{8,}$'
 regex_habitacion = r'^HAB[A-Za-z0-9_]{1,20}$'
 
@@ -168,7 +168,7 @@ def validar_form():
     # Validar documento según el tipo seleccionado
     if tipo_identificacion == 'pasaporte':
         if not validar(cedula, regex_pasaporte):
-            errores['cedula'] = "Pasaporte: 6-9 caracteres alfanuméricos."
+            errores['cedula'] = "Pasaporte: 6-9 caracteres. Solo letras MAYÚSCULAS y números."
     else:
         if not validar(cedula, regex_cedula):
             errores['cedula'] = "Cédula colombiana: exactamente 10 números."

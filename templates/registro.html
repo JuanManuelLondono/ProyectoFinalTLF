@@ -62,7 +62,7 @@
       <div class="form-group">
         <label for="cedula">Número de identificación</label>
         <div class="input-container">
-          <input type="text" id="cedula" name="cedula" placeholder="Ej: 1234567890" required maxlength="10" pattern="\d{10}">
+          <input type="text" id="cedula" name="cedula" placeholder="Ej: 1234567890" required>
           <span class="input-icon valid-icon">✓</span>
           <span class="input-icon invalid-icon">✗</span>
         </div>
@@ -96,7 +96,7 @@
       email: /^[\w\.-]+@[\w\.-]+\.\w{2,4}$/,
       telefono: /^3\d{9}$/,
   cedula: /^\d{10}$/,
-      pasaporte: /^[A-Za-z0-9]{6,9}$/,
+      pasaporte: /^[A-Z0-9]{6,9}$/,
       contrasena: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};:'\",.<>?/~`|\\]).{8,}$/
     };
 
@@ -120,7 +120,7 @@
       },
       pasaporte: {
         valid: "Documento válido",
-        invalid: "Pasaporte: 6 a 9 caracteres alfanuméricos"
+        invalid: "Pasaporte: 6 a 9 caracteres. Solo letras MAYÚSCULAS y números."
       },
       contrasena: {
         valid: "Contraseña segura",
@@ -161,40 +161,63 @@
         const tipo = document.getElementById('tipo_identificacion')?.value || 'cedula';
         pattern = tipo === 'pasaporte' ? regexPatterns.pasaporte : regexPatterns.cedula;
         messageKey = tipo === 'pasaporte' ? 'pasaporte' : 'cedula';
+        // Convertir a mayúsculas si es pasaporte
+        if (tipo === 'pasaporte' && value) {
+          value = value.toUpperCase();
+          const inputElement = document.getElementById(fieldName);
+          if (inputElement) {
+            inputElement.value = value;
+            // Mover el cursor al final
+            const len = value.length;
+            inputElement.setSelectionRange(len, len);
+          }
+        }
       }
 
       const isValid = pattern.test(value);
 
       const input = document.getElementById(fieldName);
+      if (!input) return false;
+
       const message = document.getElementById(fieldName + '-message');
       const validIcon = input.parentNode.querySelector('.valid-icon');
       const invalidIcon = input.parentNode.querySelector('.invalid-icon');
+      
+      // Remover la clase de alerta del input si existe
+      input.classList.remove('is-invalid');
 
       if (value.length === 0) {
         // Campo vacío
-        input.classList.remove('valid', 'invalid');
-        validIcon.classList.remove('show');
-        invalidIcon.classList.remove('show');
-        message.classList.remove('show', 'success', 'error');
+        input.classList.remove('valid', 'invalid', 'is-invalid');
+        if (validIcon) validIcon.classList.remove('show');
+        if (invalidIcon) invalidIcon.classList.remove('show');
+        if (message) {
+          message.classList.remove('show', 'success', 'error');
+          message.textContent = '';
+        }
         return false;
       } else if (isValid) {
         // Campo válido
-        input.classList.remove('invalid');
+        input.classList.remove('invalid', 'is-invalid');
         input.classList.add('valid');
-        validIcon.classList.add('show');
-        invalidIcon.classList.remove('show');
-        message.textContent = validationMessages[messageKey].valid;
-        message.classList.remove('error');
-        message.classList.add('success', 'show');
+        if (validIcon) validIcon.classList.add('show');
+        if (invalidIcon) invalidIcon.classList.remove('show');
+        if (message) {
+          message.textContent = validationMessages[messageKey].valid;
+          message.classList.remove('error');
+          message.classList.add('success', 'show');
+        }
       } else {
         // Campo inválido
         input.classList.remove('valid');
         input.classList.add('invalid');
-        validIcon.classList.remove('show');
-        invalidIcon.classList.add('show');
-        message.textContent = validationMessages[messageKey].invalid;
-        message.classList.remove('success');
-        message.classList.add('error', 'show');
+        if (validIcon) validIcon.classList.remove('show');
+        if (invalidIcon) invalidIcon.classList.add('show');
+        if (message) {
+          message.textContent = validationMessages[messageKey].invalid;
+          message.classList.remove('success');
+          message.classList.add('error', 'show');
+        }
       }
 
       return isValid;
@@ -300,10 +323,22 @@
         tipoSelect.addEventListener('change', function() {
           const tipo = this.value;
           const cedulaInput = document.getElementById('cedula');
+          // Limpiar el campo cuando se cambia el tipo
+          cedulaInput.value = '';
+          cedulaInput.classList.remove('valid', 'invalid');
+          const message = document.getElementById('cedula-message');
+          message.classList.remove('show', 'success', 'error');
+          const validIcon = cedulaInput.parentNode.querySelector('.valid-icon');
+          const invalidIcon = cedulaInput.parentNode.querySelector('.invalid-icon');
+          validIcon.classList.remove('show');
+          invalidIcon.classList.remove('show');
+          
           if (tipo === 'pasaporte') {
             cedulaInput.placeholder = 'Ej: ABC123456';
+            cedulaInput.maxLength = 9;
           } else {
             cedulaInput.placeholder = 'Ej: 12345678';
+            cedulaInput.maxLength = 10;
           }
           // Revalidar
           validateField('cedula', cedulaInput.value);
